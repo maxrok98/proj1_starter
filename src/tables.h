@@ -12,9 +12,10 @@ extern const int SYMTBL_UNIQUE_NAME;     // duplicate names not allowed
  */
 
 /* SOLUTION CODE BELOW */
-typedef struct {
+typedef struct symb {
     char *name;
     uint32_t addr;
+	struct symb* next;
 } Symbol;
 
 typedef struct {

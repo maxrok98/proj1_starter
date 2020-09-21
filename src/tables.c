@@ -42,12 +42,27 @@ void write_symbol(FILE* output, uint32_t addr, const char* name) {
  */
 SymbolTable* create_table(int mode) {
     /* YOUR CODE HERE */
-    return NULL;
+	SymbolTable* table = malloc(sizeof(SymbolTable));
+	if(!table){
+		allocation_failed();
+	}
+	table->tbl = NULL;
+	table->len = 0;
+	table->mode = mode;
+    return table;
 }
 
 /* Frees the given SymbolTable and all associated memory. */
 void free_table(SymbolTable* table) {
     /* YOUR CODE HERE */
+	Symbol* symb = table->tbl;
+	Symbol* next = NULL;
+	while(symb){
+		next = symb->next;	
+		free(symb);
+		symb = next;
+	}
+	free(table);
 }
 
 /* Adds a new symbol and its address to the SymbolTable pointed to by TABLE. 
@@ -66,7 +81,41 @@ void free_table(SymbolTable* table) {
  */
 int add_to_table(SymbolTable* table, const char* name, uint32_t addr) {
     /* YOUR CODE HERE */
-    return -1;
+	if ((addr % 4) != 0) {
+        addr_alignment_incorrect();
+        return -1;
+    }
+
+	Symbol* symb = table->tbl;
+	Symbol* prev = symb;
+	while(symb){
+		if(table->mode == SYMTBL_UNIQUE_NAME && strcmp(symb->name, name) == 0){
+			name_already_exists(name);
+			return -1;
+		}
+		prev = symb;
+		symb = symb->next;
+		//prev = &((*symb)->next);
+		//*symb = (*symb)->next;
+	}
+	Symbol* new_symb = malloc(sizeof(Symbol)); 
+	if(!new_symb){
+		allocation_failed();
+	}
+	new_symb->name = malloc(sizeof(name));
+	if(!new_symb->name){
+		allocation_failed();
+	}
+	strcpy(new_symb->name, name);
+	new_symb->addr = addr;
+	new_symb->next = NULL;
+	if(table->len > 0)
+		prev->next = new_symb;
+	else if (table->len == 0)
+		table->tbl = new_symb;
+	table->len++;
+
+    return 0;
 }
 
 /* Returns the address (byte offset) of the given symbol. If a symbol with name
@@ -74,6 +123,13 @@ int add_to_table(SymbolTable* table, const char* name, uint32_t addr) {
  */
 int64_t get_addr_for_symbol(SymbolTable* table, const char* name) {
     /* YOUR CODE HERE */
+	Symbol* symb = table->tbl;
+	while(symb){
+		if(strcmp(symb->name, name) == 0){
+			return symb->addr;
+		}
+		symb = symb->next;
+	}
     return -1;   
 }
 
@@ -82,4 +138,9 @@ int64_t get_addr_for_symbol(SymbolTable* table, const char* name) {
  */
 void write_table(SymbolTable* table, FILE* output) {
     /* YOUR CODE HERE */
+	Symbol* symb = table->tbl;
+	while(symb){
+		write_symbol(output, symb->addr, symb->name);
+		symb = symb->next;
+	}
 }
