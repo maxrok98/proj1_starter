@@ -60,6 +60,12 @@ int translate_num(long int* output, const char* str, long int lower_bound,
     }
     /* YOUR CODE HERE */
 
+	long int value = strtol(str, NULL, 0);
+	if(value != 0 && value >= lower_bound && value <= upper_bound){
+		*output = value;
+		return 0;
+	}
+
     return -1;
 }
 
@@ -75,5 +81,21 @@ int translate_reg(const char* str) {
     else if (strcmp(str, "$v0") == 0)   return 2;
     else if (strcmp(str, "$a0") == 0)   return 4;
     /* YOUR CODE HERE */
-    else                                return 0;
+    else if (strcmp(str, "$a1") == 0)   return 5;
+    else if (strcmp(str, "$a2") == 0)   return 6;
+    else if (strcmp(str, "$a3") == 0)   return 7;
+
+    else if (strcmp(str, "$t0") == 0)   return 8;
+    else if (strcmp(str, "$t1") == 0)   return 9;
+    else if (strcmp(str, "$t2") == 0)   return 10;
+    else if (strcmp(str, "$t3") == 0)   return 11;
+
+    else if (strcmp(str, "$s0") == 0)   return 16;
+    else if (strcmp(str, "$s1") == 0)   return 17;
+    else if (strcmp(str, "$s2") == 0)   return 18;
+    else if (strcmp(str, "$s3") == 0)   return 19;
+
+    else if (strcmp(str, "$sp") == 0)   return 29;
+    else if (strcmp(str, "$ra") == 0)   return 31;
+    else                                return -1;
 }
