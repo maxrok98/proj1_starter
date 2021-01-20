@@ -41,10 +41,38 @@
 unsigned write_pass_one(FILE* output, const char* name, char** args, int num_args) {
     if (strcmp(name, "li") == 0) {
         /* YOUR CODE HERE */
-        return 0;
+    	if(num_args != 2)
+			return 0;
+
+		long int immediate;
+		int err = translate_num(&immediate, args[1], INT32_MIN, UINT32_MAX);
+		if(err == -1){
+			return 0;
+		}
+
+		if(INT16_MIN <= immediate && immediate <= UINT16_MAX){
+			fprintf(output, "addiu %s $0 %d\n", args[0], (int)immediate);
+			return 1;
+		}
+		
+		uint16_t upper = 0;
+		uint16_t lower = 0;
+
+        upper = upper | immediate >> 16;
+        lower = lower | immediate;
+
+        fprintf(output, "lui $at %d\n", upper);
+        fprintf(output, "ori %s $at %d\n", args[0], lower);
+        return 2;
     } else if (strcmp(name, "blt") == 0) {
         /* YOUR CODE HERE */
-        return 0;
+		if (num_args != 3) {
+            return 0;
+        }
+
+        fprintf(output, "slt $at %s %s\n", args[0], args[1]);
+        fprintf(output, "bne $at $0 %s\n", args[2]);
+        return 2;
     } else {
         write_inst_string(output, name, args, num_args);
         return 1;
