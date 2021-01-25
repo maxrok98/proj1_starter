@@ -257,9 +257,9 @@ int write_addiu(uint8_t opcode, FILE* output, char** args, size_t num_args){
 	}
 
     long int immediate;
-    int rs = translate_reg(args[0]);
-    int rt = translate_reg(args[1]);
-    int err = translate_num(&immediate, args[2], -32768, 32767);
+    int rt = translate_reg(args[0]);
+    int rs = translate_reg(args[1]);
+    int err = translate_num(&immediate, args[2], INT16_MIN, UINT16_MAX);
 	if(rs == -1 || err == -1 || rt == -1){
 		return -1;
 	}
@@ -283,9 +283,9 @@ int write_ori(uint8_t opcode, FILE* output, char** args, size_t num_args){
 	}
 
     long int immediate;
-    int rs = translate_reg(args[0]);
-    int rt = translate_reg(args[1]);
-    int err = translate_num(&immediate, args[2], -32768, 32767);
+    int rt = translate_reg(args[0]);
+    int rs = translate_reg(args[1]);
+    int err = translate_num(&immediate, args[2], INT16_MIN, UINT16_MAX);
 	if(rs == -1 || err == -1 || rt == -1){
 		return -1;
 	}
@@ -359,8 +359,8 @@ int write_branch(uint8_t opcode, FILE* output, char** args, size_t num_args,
 			return -1;
 	}
 
-    int rt = translate_reg(args[0]);
-    int rs = translate_reg(args[1]);
+    int rs = translate_reg(args[0]);
+    int rt = translate_reg(args[1]);
     char*  label = args[2]; 
 	int64_t addr_label = get_addr_for_symbol(symtbl, label);
 	if(rs == -1 || addr_label == -1 || rt == -1){

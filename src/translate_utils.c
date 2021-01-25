@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include "translate_utils.h"
 
@@ -60,13 +61,18 @@ int translate_num(long int* output, const char* str, long int lower_bound,
     }
     /* YOUR CODE HERE */
 
-	long int value = strtol(str, NULL, 0);
-	if(value != 0 && value >= lower_bound && value <= upper_bound){
-		*output = value;
-		return 0;
+	char* pEnd;
+	long int value = strtol(str, &pEnd, 0);
+	
+	if((pEnd != NULL && *pEnd != '\0') || errno == ERANGE){
+		return -1;
+	}
+	if(value < lower_bound || value > upper_bound){
+    	return -1;
 	}
 
-    return -1;
+	*output = value;
+	return 0;
 }
 
 /* Translates the register name to the corresponding register number. Please
