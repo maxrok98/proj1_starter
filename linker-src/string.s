@@ -28,6 +28,23 @@ tab:	.asciiz "\t"
 #------------------------------------------------------------------------------
 strlen:
 	# YOUR CODE HERE
+	addiu $sp, $sp, -4
+	sw $ra, 0($sp)
+
+	andi $v0, $v0, 0
+	addiu $t1, $a0, 0
+	lbu $t0, 0($t1)
+
+strlen_loop:
+	beq $t0, $0, strlen_ret
+	addiu $t1, $t1, 1
+	addiu $v0, $v0, 1
+	lbu $t0, 0($t1)
+	j strlen_loop
+
+strlen_ret:
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 4
 	jr $ra
 
 #------------------------------------------------------------------------------
@@ -42,6 +59,26 @@ strlen:
 #------------------------------------------------------------------------------
 strncpy:
 	# YOUR CODE HERE
+	addiu $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	addiu $t0, $a0, 0
+	addiu $t1, $a1, 0
+	addiu $t2, $a2, 0
+	
+strncpy_loop:
+	beq $t2, $0, strncpy_ret
+	lbu $t3, 0($t1)
+	sb $t3, 0($t0)
+	addiu $t0, $t0, 1
+	addiu $t1, $t1, 1
+	addiu $t2, $t2, -1
+	j strncpy_loop
+
+strncpy_ret:
+	add $v0, $a0, $0
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 4
 	jr $ra
 
 #------------------------------------------------------------------------------
@@ -58,6 +95,26 @@ strncpy:
 #------------------------------------------------------------------------------
 copy_of_str:
 	# YOUR CODE HERE
+	addiu $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $a0, 4($sp)
+
+	jal strlen
+	add $a0, $v0, $0
+
+	addiu $a0, $a0, 1
+	li $v0, 9
+	syscall
+
+	add $a2, $a0, 0
+	add $a0, $v0, 0
+	lw $a1, 4($sp)
+	
+	jal strncpy
+
+copy_of_str_ret:
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 8
 	jr $ra
 
 ###############################################################################
