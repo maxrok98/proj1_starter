@@ -49,7 +49,37 @@
 #------------------------------------------------------------------------------
 addr_for_symbol:
 	# YOUR CODE HERE
+	addiu $sp, $sp, -12
+	sw $a0, 8($sp)
+	sw $a1, 4($sp)
+	sw $ra, 0($sp)
+
+addr_for_symbol_loop:
+	lw $t0, 8($sp)
+	lw $t1, 4($sp)
+	beq $t0, $0, addr_not_found	
+
+	lw $a0, 4($t0)
+	lw $a1, 4($sp)
+	jal streq
+	beq $v0, $0, addr_found
+
+	lw $t2, 8($sp)
+	lw $t3, 8($t2)
+	sw $t3, 8($sp)
+	j addr_for_symbol_loop
+
+addr_found:
+	lw $t0, 8($sp)
+	lw $v0, 0($t0)
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 12
 	jr $ra
+addr_not_found:
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 12
+	li $v0, -1
+	jr $ra			# End addr_for_symbol
 	
 #------------------------------------------------------------------------------
 # function add_to_list()
@@ -71,6 +101,30 @@ addr_for_symbol:
 #------------------------------------------------------------------------------
 add_to_list:	
 	# YOUR CODE HERE
+	addiu $sp, $sp, -20
+	sw $a0, 12($sp)
+	sw $a1, 8($sp)
+	sw $a2, 4($sp)
+	sw $ra, 0($sp)
+
+	jal new_node
+	lw $t0, 12($sp) 
+	sw $t0, 8($v0) #store ptr to next node
+
+	lw $t0, 8($sp) 
+	sw $t0, 0($v0) #store addr to node
+
+	sw $v0, 16($sp) #store pointer to new node
+
+	lw $a0, 4($sp)
+	jal copy_of_str
+
+	lw $t0, 16($sp)
+	sw $v0, 4($t0) #store pointer to copy of name
+	
+	lw $v0, 16($sp)
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 20
 	jr $ra
 
 ###############################################################################
