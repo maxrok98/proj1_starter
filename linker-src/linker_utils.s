@@ -46,6 +46,24 @@ relocLabel: .asciiz ".relocation"
 #------------------------------------------------------------------------------
 inst_needs_relocation:
 	# YOUR CODE HERE
+	addiu $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	srl $a0, $a0, 26
+	li $t0, 0x02
+	beq $a0, $t0, inst_needs_relocation_do
+	li $t0, 0x03
+	beq $a0, $t0, inst_needs_relocation_do
+	li $v0, 0
+	j inst_needs_relocation_end
+	 
+inst_needs_relocation_do:
+	li $v0, 1
+	j inst_needs_relocation_end
+	
+inst_needs_relocation_end:
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 4
 	jr $ra
 	
 #------------------------------------------------------------------------------
@@ -68,6 +86,34 @@ inst_needs_relocation:
 #------------------------------------------------------------------------------
 relocate_inst:
 	# YOUR CODE HERE
+	addiu $sp, $sp, -20
+	sw $a0, 16($sp)
+	sw $a1, 12($sp)
+	sw $a2, 8($sp)
+	sw $a3, 4($sp)
+	sw $ra, 0($sp)
+
+	lw $a0, 4($sp)
+	lw $a1, 12($sp)
+	jal symbol_for_addr
+	beq $v0, $0, relocate_inst_error
+
+	lw $a0, 8($sp)
+	move $a1, $v0
+	jal addr_for_symbol
+	blt $v0, $0, relocate_inst_error
+
+	srl $t0, $v0, 2
+	andi $t0, $t0, 0x03ffffff
+	lw $t1, 16($sp)
+	andi $t1, $t1, 0x0c000000
+	or $v0, $t0, $t1
+	j relocate_inst_end
+relocate_inst_error:
+	li $v0, -1
+relocate_inst_end:
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 20
 	jr $ra
 
 ###############################################################################

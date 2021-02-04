@@ -37,6 +37,36 @@
 #------------------------------------------------------------------------------
 hex_to_str:
 	# YOUR CODE HERE
+	addiu $sp, $sp, -12
+	sw $a0, 8($sp)
+	sw $a1, 4($sp)
+	sw $ra, 0($sp)
+
+	lw $t1, 4($sp)
+	li $t2, 28
+
+hex_to_str_loop:
+	lw $t0, 8($sp)
+	blt $t2, $0, hex_to_str_end
+	srlv $t0, $t0, $t2
+	andi $t0, $t0, 0x0000000f
+	li $t3, 10
+	blt $t0, $t3, hex_to_str_number
+hex_to_str_letter:
+	addiu $t0, $t0, 39
+hex_to_str_number:
+	addiu $t0, $t0, 48
+	sb $t0, 0($t1)
+	addiu $t1, $t1, 1
+	addiu $t2, $t2, -4
+	j hex_to_str_loop
+
+hex_to_str_end:
+	li $t0, 10
+	sb $t0, 0($t1) # save '\n'
+	sb $0, 1($t1) # save '\0'
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 4
 	jr $ra
 
 ###############################################################################
