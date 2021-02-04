@@ -54,7 +54,7 @@ inst_needs_relocation:
 	beq $a0, $t0, inst_needs_relocation_do
 	li $t0, 0x03
 	beq $a0, $t0, inst_needs_relocation_do
-	li $v0, 0
+	and $v0, $v0, $0
 	j inst_needs_relocation_end
 	 
 inst_needs_relocation_do:
